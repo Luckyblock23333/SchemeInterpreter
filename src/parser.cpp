@@ -278,6 +278,9 @@ Expr List::parse(Assoc &env) {
             case E_SYMBOLQ:
                 if (params.size() != 1) throw RuntimeError("symbol? requires exactly 1 argument");
                 return Expr(new IsSymbol(params[0]));
+            case E_LISTQ:
+                if (params.size() != 1) throw RuntimeError("list? requires exactly 1 argument");
+                return Expr(new IsList(params[0]));
             case E_STRINGQ:
                 if (params.size() != 1) throw RuntimeError("string? requires exactly 1 argument");
                 return Expr(new IsString(params[0]));

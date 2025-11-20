@@ -665,14 +665,19 @@ Value IsList::evalRator(const Value &rand) { // list?
     if (rand->v_type == V_NULL) {
         return Value(new Boolean(true));
     }
-    else if (rand->v_type == V_PAIR) {
-        Pair*pair = dynamic_cast<Pair*>(rand.get());
-        Value dfs_result = evalRator(pair->cdr);
-        Boolean* bool_1 = dynamic_cast<Boolean*>(dfs_result.get());
-        return Value(new Boolean(bool_1->b));
-    }else {
+
+    if (rand->v_type != V_PAIR) {
         return Value(new Boolean(false));
     }
+    Pair* pair = dynamic_cast<Pair*>(rand.get());
+
+    if (pair->cdr->v_type == V_NULL) {
+        return Value(new Boolean(true));
+    }
+
+    Value dfs_result = evalRator(pair->cdr);
+    Boolean* bool_1 = dynamic_cast<Boolean*>(dfs_result.get());
+    return Value(new Boolean(bool_1->b));
 }
 
 Value Car::evalRator(const Value &rand) { // car
