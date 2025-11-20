@@ -115,24 +115,29 @@ Expr List::parse(Assoc &env) {
         return Expr(new Quote(Syntax(new List())));
     }
 
-    // Step 1: Parse all parameters (stxs[1..end] → vector<Expr>)
-    vector<Expr> params = parse_expr_list(vector<Syntax>(stxs.begin()+1, stxs.end()), env);
-
-    // Step 2: Check if first element is Symbol (for special forms/primitives/variables)
-
-    // WARNING: 这么判断是不是符号这能行？
+    // Step 1: Check if first element is Symbol (for special forms/primitives/variables)
 
     SymbolSyntax* id = dynamic_cast<SymbolSyntax*>(stxs[0].get());
     if (id == nullptr) {
         // Non-symbol first element → function application (Apply)
         // e.g., ((lambda (x) x) 5) → Apply(lambda_expr, {5})
         Expr func = stxs[0]->parse(env);
+        vector<Expr> params = parse_expr_list(vector<Syntax>(stxs.begin()+1, stxs.end()), env);
         return Expr(new Apply(func, params));
     }
 
     string op = id->s;
 
-    // Step 3: Parse reserved words (highest priority)
+    // Step 2: check if symbol is quote
+    if (reserved_words.count(op) != 0 && reserved_words[op] == E_QUOTE) {
+            // (quote expr)
+            // if (stxs.size() != 2) throw RuntimeError("quote requires exactly 1 argument");
+            return Expr(new Quote(stxs[1]));
+    }
+
+    vector<Expr> params = parse_expr_list(vector<Syntax>(stxs.begin()+1, stxs.end()), env);
+
+    // Step 3: Parse other reserved words (highest priority)
     if (reserved_words.count(op) != 0) {
         switch (reserved_words[op]) {
             case E_DEFINE: {
@@ -197,12 +202,6 @@ Expr List::parse(Assoc &env) {
                 // (begin expr1 expr2 ...)
                 vector<Expr> begin_body = parse_expr_list(vector<Syntax>(stxs.begin()+1, stxs.end()), env);
                 return Expr(new Begin(begin_body));
-            }
-
-            case E_QUOTE: {
-                // (quote expr)
-                // if (stxs.size() != 2) throw RuntimeError("quote requires exactly 1 argument");
-                return Expr(new Quote(stxs[1]));
             }
 
             default:
