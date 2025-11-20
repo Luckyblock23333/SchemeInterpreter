@@ -800,13 +800,13 @@ Value syntax_to_quoted_value(const Syntax &s_we_own) {
     else if (dynamic_cast<FalseSyntax*>(base)) {
         return Value(new Boolean(false));
     }
-    // 处理符号
-    else if (auto sym = dynamic_cast<SymbolSyntax*>(base)) {
-        return Value(new Symbol(sym->s));
-    }
     // 处理字符串
     else if (auto str = dynamic_cast<StringSyntax*>(base)) {
         return Value(new String(str->s));
+    }
+    // 处理符号
+    else if (auto sym = dynamic_cast<SymbolSyntax*>(base)) {
+        return Value(new Symbol(sym->s));
     }
 	// 处理列表与pair
     else if (auto list = dynamic_cast<List*>(base)) {
@@ -843,6 +843,7 @@ Value syntax_to_quoted_value(const Syntax &s_we_own) {
     // 其他未定义类型
     else {
         throw RuntimeError("though i can't find this type,you are a fucker,fuck you!");
+        while (1);
     }
 }
 Value Quote::eval(Assoc& e) {
