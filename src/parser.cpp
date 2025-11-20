@@ -201,7 +201,7 @@ Expr List::parse(Assoc &env) {
 
             case E_QUOTE: {
                 // (quote expr)
-                if (stxs.size() != 2) throw RuntimeError("quote requires exactly 1 argument");
+                // if (stxs.size() != 2) throw RuntimeError("quote requires exactly 1 argument");
                 return Expr(new Quote(stxs[1]));
             }
 
