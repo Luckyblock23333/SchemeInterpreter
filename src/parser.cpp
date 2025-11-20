@@ -131,7 +131,7 @@ Expr List::parse(Assoc &env) {
     // Step 2: check if symbol is quote
     if (reserved_words.count(op) != 0 && reserved_words[op] == E_QUOTE) {
             // (quote expr)
-            // if (stxs.size() != 2) throw RuntimeError("quote requires exactly 1 argument");
+            if (stxs.size() != 2) throw RuntimeError("quote requires exactly 1 argument");
             return Expr(new Quote(stxs[1]));
     }
 
