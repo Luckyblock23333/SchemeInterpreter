@@ -256,6 +256,10 @@ Expr List::parse(Assoc &env) {
             case E_CDR:
                 if (params.size() != 1) throw RuntimeError("cdr requires exactly 1 argument");
                 return Expr(new Cdr(params[0]));
+
+            case E_EQQ:
+                if (params.size() != 2) throw RuntimeError("eq? requires exactly 2 argument");
+                return Expr(new IsEq(params[0], params[1]));
             case E_BOOLQ:
                 if (params.size() != 1) throw RuntimeError("boolean? requires exactly 1 argument");
                 return Expr(new IsBoolean(params[0]));

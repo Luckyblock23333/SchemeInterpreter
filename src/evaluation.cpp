@@ -65,6 +65,16 @@ Value Variadic::eval(Assoc &e) { // evaluation of multi-operator primitive
     //TODO: To complete the substraction logic
 }
 
+bool is_integer(const std::string& s) {
+    if (s.empty()) return false;
+    int i = 0;
+    if (s[0] == '-' || s[0] == '+') i = 1;
+    if (i == s.size()) return false;
+    for (; i < s.size(); i++)
+        if (!isdigit(s[i])) return false;
+    return true;
+}
+
 Value Var::eval(Assoc &e) { // evaluation of variable
 	if(x.empty()){
 		throw RuntimeError("an block?what a fuckerman you are!! GRRRRRRRRRRRR");
@@ -82,14 +92,14 @@ Value Var::eval(Assoc &e) { // evaluation of variable
         }
     }
      // 2. 数字优先识别
-    bool is_number = false;
-	try {
+    bool is_number = is_integer(x);
+    if (is_number) {
         size_t pos;
         long long val = stoll(x, &pos);
         if (pos == x.size()) { // 完全匹配整数
             return IntegerV(static_cast<int>(val));
         }
-    } catch (...) {}
+    }
     // 若不是整数，尝试解析有理数（如 "1/2"、"-3/4"）
     if (!is_number) {
         size_t slash_pos = x.find('/');
@@ -375,7 +385,6 @@ Value PlusVar::evalRator(const std::vector<Value> &args) { // + with multiple ar
         sum = Plus(Expr(new PlusVar({})), Expr(new PlusVar({}))).evalRator(sum, args[i]);
     }
     return sum;
-    //TODO: To complete the addition logic
 }
 
 Value MinusVar::evalRator(const std::vector<Value> &args) { // - with multiple args

@@ -15,7 +15,7 @@ bool isExplicitVoidCall(Expr expr) {
     if (make_void_expr != nullptr) {
         return true;
     }
-    
+
     Apply* apply_expr = dynamic_cast<Apply*>(expr.get());
     if (apply_expr != nullptr) {
         Var* var_expr = dynamic_cast<Var*>(apply_expr->rator.get());
@@ -23,17 +23,17 @@ bool isExplicitVoidCall(Expr expr) {
             return true;
         }
     }
-    
+
     Begin* begin_expr = dynamic_cast<Begin*>(expr.get());
     if (begin_expr != nullptr && !begin_expr->es.empty()) {
         return isExplicitVoidCall(begin_expr->es.back());
     }
-    
+
     If* if_expr = dynamic_cast<If*>(expr.get());
     if (if_expr != nullptr) {
         return isExplicitVoidCall(if_expr->conseq) || isExplicitVoidCall(if_expr->alter);
     }
-    
+
     Cond* cond_expr = dynamic_cast<Cond*>(expr.get());
     if (cond_expr != nullptr) {
         for (const auto& clause : cond_expr->clauses) {
