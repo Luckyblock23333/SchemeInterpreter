@@ -816,12 +816,24 @@ Value syntax_to_quoted_value(const Syntax &s_we_own) {
         // 检测 stxs 中是否有点符号
         bool has_valid_dot = false;
         int dot_index = -1;
-        if (elements.size() >= 3) {
-            dot_index = elements.size() - 2;
-            auto dot_sym = dynamic_cast<SymbolSyntax*>(elements[dot_index].get());
+        int dot_count = 0;
+        for (int i = 0; i < elements.size(); ++i){
+            auto dot_sym = dynamic_cast<SymbolSyntax*>(elements[i].get());
             if (dot_sym && dot_sym->s == ".") {
-                has_valid_dot = true;
+                ++ dot_count;
+                dot_index = i;
             }
+        }
+        if (elements.size() >= 3) {
+            if (dot_count == 1 && dot_index == elements.size() - 2) has_valid_dot = true;
+            if (dot_count > 1) {
+                throw RuntimeError("dot_count > 1, you are a fucker,fuck you!");
+            }
+            if (dot_count == 1 && dot_index != elements.size() - 2) {
+                throw RuntimeError("dot position not equal elements.size() - 2, you are a fucker,fuck you!");
+            }
+        } else if (dot_count >= 1) {
+            throw RuntimeError("invalid dot, you are a fucker,fuck you!");
         }
         if (has_valid_dot) {
             // 带点形式：处理 . 前面的元素为 car 链，. 后面的元素为最终 cdr
