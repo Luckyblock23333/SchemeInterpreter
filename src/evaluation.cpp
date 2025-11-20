@@ -319,9 +319,6 @@ Value Div::evalRator(const Value &rand1, const Value &rand2) {
     if (rand2->v_type != V_INT && rand2->v_type != V_RATIONAL) {
         throw(RuntimeError("Wrong typename"));
     }
-    if (rand2->v_type == V_INT && dynamic_cast<Integer*>(rand1.get())->n == 0) {
-        throw(RuntimeError("You are a fucker"));
-    }
     int num1, den1;
     if (rand1->v_type == V_INT) {
         num1 = dynamic_cast<Integer*>(rand1.get())->n;  // 整数的分子是其值
@@ -339,7 +336,11 @@ Value Div::evalRator(const Value &rand1, const Value &rand2) {
         den2 = dynamic_cast<Rational*>(rand2.get())->denominator;
     }
 
-    // 计算减法：num1/den1 / num2/den2
+    if (num2 == 0) {
+        throw(RuntimeError("You are a fucker, can't div 0"));
+    }
+
+    // 计算除法：num1/den1 / num2/den2
     int new_num = num1 * den2;
     int new_den = den1 * num2;
     //约分
