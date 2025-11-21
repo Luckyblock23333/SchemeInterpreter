@@ -1126,7 +1126,7 @@ bool does_expr_reference(const Expr& expr, const std::string& var_name) {
 }
 Value Define::eval(Assoc &env) {
 	std::string var_name = this->var;
-	 Expr value_expr = this->e;
+    Expr value_expr = this->e;
 	if (primitives.find(var_name) != primitives.end()) {
         throw RuntimeError("Cannot redefine primitive function: '" + var_name + "'fuck");
     }
@@ -1142,7 +1142,7 @@ Value Define::eval(Assoc &env) {
         if (does_expr_reference(lambda_expr->e, var_name)) {
             is_recursive = true;
             // 占位：先绑定一个临时值（如 Void），避免函数体求值时未定义
-            extend(var_name, Value(new Void()), env);
+            env = extend(var_name, Value(new Void()), env);
         }
     }
     Value final_val = value_expr->eval(env);
@@ -1153,13 +1153,12 @@ Value Define::eval(Assoc &env) {
         if (find(var_name, env).get() != nullptr) {
             modify(var_name, final_val, env);  // 重定义
         } else {
-            extend(var_name, final_val, env);  // 新定义
+            env = extend(var_name, final_val, env);  // 新定义
         }
     }
 
     // Scheme 约定：define 不返回有意义的值（返回 Void）
     return Value(new Void());
-    //TODO: To complete the define logic
 }
 
 Value Let::eval(Assoc &env) {
