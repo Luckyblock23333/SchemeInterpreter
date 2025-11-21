@@ -135,8 +135,6 @@ Expr List::parse(Assoc &env) {
             return Expr(new Quote(stxs[1]));
     }
 
-    vector<Expr> params = parse_expr_list(vector<Syntax>(stxs.begin()+1, stxs.end()), env);
-
     // Step 3: Parse other reserved words (highest priority)
     if (reserved_words.count(op) != 0) {
         switch (reserved_words[op]) {
@@ -209,6 +207,7 @@ Expr List::parse(Assoc &env) {
         }
     }
 
+    vector<Expr> params = parse_expr_list(vector<Syntax>(stxs.begin()+1, stxs.end()), env);
     // Step 4: Parse primitive functions
     if (primitives.count(op) != 0) {
         ExprType op_type = primitives[op];
